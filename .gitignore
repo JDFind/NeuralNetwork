@@ -26,3 +26,10 @@
 *.exe
 *.out
 *.app
+*.tlog
+NeuralNetwork/output.txt
+NeuralNetwork/NeuralNetwork.VC.db
+NeuralNetwork/Debug/
+NeuralNetwork/output_2_4_3_1.txt
+NeuralNetwork/output_2_4_3_1_.25_0.5.txt
+NeuralNetwork/NeuralNetwork.VC.VC.opendb
