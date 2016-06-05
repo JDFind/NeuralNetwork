@@ -12,11 +12,8 @@ using namespace std;
 const double eta = 0.25; //learing rage
 const double alpha = 0.5; //momentum rate
 
-const double MIN_WEIGHT = -10.0;
-const double MAX_WEIGHT = 10.0;
-
-//const double MIN_WEIGHT = -1.0;
-//const double MAX_WEIGHT = 1.0;
+const double MIN_WEIGHT = -1.0;
+const double MAX_WEIGHT = 1.0;
 
 class Neuron {
 

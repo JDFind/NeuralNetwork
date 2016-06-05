@@ -22,7 +22,9 @@ Neuron::Neuron(int numRealInputConnections, bool isInputNeuron, bool isBiasNeuro
 
 		double randomWeight;
 
+		//do {
 			randomWeight = RandomHandler::getInstance().getRealUniform(MIN_WEIGHT, MAX_WEIGHT);
+		//} while (randomWeight > 0.1 * MIN_WEIGHT && randomWeight < 0.1 * MAX_WEIGHT);
 
 		mInputWeights.push_back(randomWeight);
 		mInputWeightsDelta.push_back(0.0);
