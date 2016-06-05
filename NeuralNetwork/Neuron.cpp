@@ -20,7 +20,10 @@ Neuron::Neuron(int numRealInputConnections, bool isInputNeuron, bool isBiasNeuro
 	//take in consideration the bias neuron
 	for (unsigned int counter = 0; counter < numRealInputConnections + 1; counter++) {
 
-		double randomWeight = RandomHandler::getInstance().getRealRandom(MIN_WEIGHT, MAX_WEIGHT);
+		double randomWeight;
+
+			randomWeight = RandomHandler::getInstance().getRealUniform(MIN_WEIGHT, MAX_WEIGHT);
+
 		mInputWeights.push_back(randomWeight);
 		mInputWeightsDelta.push_back(0.0);
 	}

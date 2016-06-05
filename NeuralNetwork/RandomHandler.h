@@ -30,7 +30,8 @@ class RandomHandler {
 
 		static RandomHandler &getInstance();
 
-		double getRealRandom(double min, double max);
+		double getRealUniform(double min, double max);
+		double getRealNormal(double min, double max);
 };
 
 #endif

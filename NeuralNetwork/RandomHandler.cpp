@@ -13,9 +13,16 @@ RandomHandler & RandomHandler::getInstance() {
 	return mInstance;
 }
 
-double RandomHandler::getRealRandom(double min, double max) {
+double RandomHandler::getRealUniform(double min, double max) {
 
 	uniform_real_distribution<> distribution(min, max);
 			
 	return (double) distribution(randomEngine);
+}
+
+double RandomHandler::getRealNormal(double min, double max) {
+
+	normal_distribution<> distribution(min, max);
+
+	return (double)distribution(randomEngine);
 }
