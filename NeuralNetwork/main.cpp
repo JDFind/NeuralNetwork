@@ -1,9 +1,10 @@
 
 #include <iostream>
 #include <fstream>
-#include <string>
-#include "RandomHandler.h"
+#include <time.h>
 #include "Network.h"
+#include "Trainer.h"
+#include "Menu.h"
 
 using namespace std;
 
@@ -17,115 +18,76 @@ int exit() {
 	return 0;
 }
 
-int xor(int a, int b) {
+void createNetwork(Network **pNetwork) {
 
-	return a ^ b;
-}
+	if (*pNetwork != nullptr) {
 
-void logTrainingToFile(int run, vector<double> input, double output, double expectedOutput, double error, ofstream *outputFile) {
-
-	*outputFile << "Iteration: " << run << endl;
-	*outputFile << "Input values: " << input.front() << " " << input.back() << endl;
-	*outputFile << "Expected: " << expectedOutput << endl;
-	*outputFile << "Network output: " << output << endl;
-	*outputFile << "Error: " << error << endl;
-	*outputFile << endl;
-}
-
-void trainNN(Network *network, unsigned long int maxRuns) {
-
-	ofstream outputFile;
-	/*string fileName = "output" + to_string(threadIndex) + ".txt";*/
-	string fileName = "output.txt";
-	outputFile.open(fileName, ios::out);
-
-	vector<double> input;
-	vector<double> expectedOutput;
-
-	for (unsigned int run = 1; run <= maxRuns; run++) {
-
-		input.clear();
-		expectedOutput.clear();
-
-		int a;
-		int b;
-
-		switch (run % 4) {
-
-		case 1:
-			a = 0;
-			b = 0;
-			break;
-
-		case 2:
-			a = 0;
-			b = 1;
-			break;
-
-		case 3:
-			a = 1;
-			b = 0;
-			break;
-
-		case 0:
-			a = 1;
-			b = 1;
-			break;
-		}
-
-		input.push_back(a);
-		input.push_back(b);
-		expectedOutput.push_back(xor (a, b));
-
-		network->feedInput(input);
-
-		vector<double> output = network->getOutput();
-
-		//FIXME: am un bias neuron in output (!)
-
-		//if (output.size() != 1) {
-		//	throw runtime_error("Invalid output received");
-		//}
-
-		if (run >= maxRuns - pow(10, 2) || run <= pow(10, 2)) {
-
-			double error = network->calculateError(output, expectedOutput);
-			logTrainingToFile(run, input, output.front(), expectedOutput.front(), error, &outputFile);
-		}
-
-		if (run % (maxRuns / 10) == 0) {
-			cout << (float)run / (float)maxRuns * 100 << "%" << "\t";
-		}
-
-		network->backPropagation(output, expectedOutput);
+		delete *pNetwork;
 	}
 
-	outputFile.close();
-}
-
-int main() {
-
-	cout << "Hello" << endl;
-
 	Layer inputLayer(2, 0, LAYER_TYPE_INPUT);
-	
+
 	vector<Layer> hiddenLayers;
 	hiddenLayers.push_back(Layer(4, 2, LAYER_TYPE_HIDDEN));
-	hiddenLayers.push_back(Layer(3, 4, LAYER_TYPE_HIDDEN));
+	hiddenLayers.push_back(Layer(2, 4, LAYER_TYPE_HIDDEN));
 
-	Layer outputLayer(1, 3, LAYER_TYPE_OUTPUT);
-	
-	Network network(inputLayer, hiddenLayers, outputLayer);
-	network.setNormalization(0, 1);
+	Layer outputLayer(1, 2, LAYER_TYPE_OUTPUT);
 
-	trainNN(&network, pow(10, 5) * 5);
+	*pNetwork = new Network(inputLayer, hiddenLayers, outputLayer);
+	(*pNetwork)->setNormalization(0, 1);
 
-	cout << "Neural network is trained." << endl;
+	cout << "New network created" << endl;
+}
 
-	int key;
+void trainNetwork(Network *network, bool lightTraining) {
+
+	if (network == nullptr) {
+
+		cout << "Network not initialised." << endl;
+		return;
+	}
+
+	unsigned long int numIterations;
+
+	if (lightTraining) {
+		numIterations = pow(10, 4) * 1;
+	}
+	else {
+		numIterations = pow(10, 5) * 1;
+	}
+
+	cout << endl;
+	cout << "Training neural network in " << numIterations << " iterations" << endl;
+
+	float startTime = float(clock());
+
+	double meanError;
+	meanError = trainForXOR(network, numIterations);
+
+	float timeDiff = float(clock() - startTime) / CLOCKS_PER_SEC;
+
+	cout << endl;
+	cout << "Training complete (" << timeDiff << " s)" << endl;
+	cout << "Mean error for last 10%: " << meanError << endl;
+
+	if ((lightTraining && meanError > 0.15) || (!lightTraining && meanError > 0.10)) {
+
+		cout << endl;
+		cout << "This neural network is a failure!" << endl;
+	}
+}
+
+void useNetwork(Network *network) {
+
+	if (network == nullptr) {
+
+		cout << "Network not initialised." << endl;
+		return;
+	}
+
+	int key = 1;
 
 	do {
-
 		vector<double> input;
 		int a, b;
 
@@ -139,12 +101,72 @@ int main() {
 		input.push_back(a);
 		input.push_back(b);
 
-		network.feedInput(input);
-		cout << "Result: " << network.getOutput().front() << endl;
+		network->feedInput(input);
+		cout << "Result: " << network->getOutput().front() << endl;
 
-		cout << "Press 0 to exit or 1 to continue." << endl;
+		cout << endl;
+		cout << "Press 0 to go back to menu" << endl;
 		cin >> key;
 	} while (key != 0);
+}
+
+void discardNetwork(Network **network) {
+
+	delete *network;
+	*network = nullptr;
+
+	cout << "Network discarded" << endl;
+}
+
+int main() {
+
+	cout << "Hello" << endl;
+
+	displayMenu();
+
+	unsigned short int key = 0;
+	Network *network = nullptr;
+
+	do {
+
+		cout << endl;
+		cout << "select: ";
+		cin >> key;
+
+		switch (key) {
+
+			case MENU_OPTION_DISPLAY:
+				displayMenu();
+				break;
+
+			case MENU_OPTION_CREATE_NEWTORK:
+				createNetwork(&network);
+				break;
+
+			case MENU_OPTION_LIGHT_TRAIN_XOR:
+				trainNetwork(network, true);
+				break;
+
+			case MENU_OPTION_HEAVY_TRAIN_XOR:
+				trainNetwork(network, false);
+				break;
+
+			case MENU_OPTION_USE_XOR:
+				useNetwork(network);
+				break;
+
+			case MENU_OPTION_DISCARD_NETWORk:
+				discardNetwork(&network);
+				break;
+
+			case MENU_OPTION_CLOSE_PROGRAM:
+				break;
+
+			default:
+				cout << "Invalid option" << endl;
+				break;
+		}
+	} while (key != MENU_OPTION_CLOSE_PROGRAM);
 
 	return exit();
 }
