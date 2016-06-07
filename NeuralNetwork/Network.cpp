@@ -50,28 +50,30 @@ vector<double> Network::getOutput() {
 }
 
 //private
-double Network::normalizeInput(double value) {
+void Network::normalizeInput(vector<double> *inputVals) {
 
-	double result =
-		(normalization.MIN_RANGE - normalization.MAX_RANGE) / (normalization.expectedMin - normalization.expectedMax)
-		* value
-		+ normalization.MAX_RANGE
-		* (normalization.expectedMin + normalization.expectedMax) / (normalization.expectedMin - normalization.expectedMax);
+	for (auto &value : *inputVals) {
 
-	return result;
+		value =
+			(normalization.MIN_RANGE - normalization.MAX_RANGE) / (normalization.expectedMin - normalization.expectedMax)
+			* value
+			+ normalization.MAX_RANGE
+			* (normalization.expectedMin + normalization.expectedMax) / (normalization.expectedMin - normalization.expectedMax);
+	}
 }
 
 //private
 //functia inversa a celei folosite in normalizeInput()
-double Network::deNormalizeOutput(double value) {
+void Network::denormalizeOutput(vector<double> *outputVals) {
 
-	double result =
-		value
-		* (normalization.expectedMin - normalization.expectedMax) / (normalization.MIN_RANGE - normalization.MAX_RANGE)
-		- normalization.MAX_RANGE
-		* (normalization.expectedMin + normalization.expectedMax) / (normalization.MIN_RANGE - normalization.MAX_RANGE);
+	for (auto &value : *outputVals) {
 
-	return result;
+		value =
+			value
+			* (normalization.expectedMin - normalization.expectedMax) / (normalization.MIN_RANGE - normalization.MAX_RANGE)
+			- normalization.MAX_RANGE
+			* (normalization.expectedMin + normalization.expectedMax) / (normalization.MIN_RANGE - normalization.MAX_RANGE);
+	}
 }
 
 //private

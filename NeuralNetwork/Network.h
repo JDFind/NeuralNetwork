@@ -35,8 +35,8 @@ class Network {
 
 		normParams normalization;
 
-		double normalizeInput(double value);
-		double deNormalizeOutput(double value);
+		void normalizeInput(vector<double> *inputVals);
+		void denormalizeOutput(vector<double> *outputVals);
 
 		vector<double> frontPropagation();
 
