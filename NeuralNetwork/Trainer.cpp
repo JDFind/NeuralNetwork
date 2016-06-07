@@ -88,7 +88,7 @@ double trainForXOR(Network *network, unsigned long int maxRuns) {
 
 		if ((double)run / (double)maxRuns >= 0.9) {
 
-			error = network->calculateError(output, expectedOutput);
+			error = network->calculateRMSError(output, expectedOutput);
 			meanError += error;
 		}
 

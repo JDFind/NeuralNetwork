@@ -49,7 +49,7 @@ class Network {
 		void feedInput(vector<double> inputVals);
 
 		void backPropagation(vector<double> outputValues, vector<double> expectedValues);
-		double calculateError(vector<double> outputValues, vector<double> expectedValues);
+		double calculateRMSError(vector<double> outputValues, vector<double> expectedValues);
 		
 		vector<double> getOutput();
 };

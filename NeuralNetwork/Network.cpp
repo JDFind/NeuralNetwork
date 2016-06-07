@@ -94,31 +94,24 @@ vector<double> Network::frontPropagation() {
 }
 
 //public
-double Network::calculateError(vector<double> outputValues, vector<double> expectedValues) {
+//functia NU este apelata pentru calculul gradientului
+double Network::calculateRMSError(vector<double> outputValues, vector<double> expectedValues) {
 
 	Layer *outputLayer = &mLayers.back();
 
 	double error = 0.0;
 
 	//ignore bias neurons
-	for (unsigned int neuronNum = 0; neuronNum < outputLayer->mNeurons.size() - 1; neuronNum++) {
+	unsigned int numNeurons = outputLayer->mNeurons.size() - 1;
+	
+	for (unsigned int neuronNum = 0; neuronNum < numNeurons; neuronNum++) {
 
 		double delta = outputValues.at(neuronNum) - expectedValues.at(neuronNum);
 		error += pow(delta, 2);
 	}
 
-	/*
-	@deprecated
-
-	//ignore bias neurons
-	error /= outputLayer->mNeurons.size() - 1;
-	error = sqrt(error); //average RMS
-
-	//In cazul meu, eroarea are veni error / 1
-	//In multe locuri am vazut eroarea calculata cu 1/2 * sum (...)
-	*/
-
-	error /= 2;
+	error = sqrt(error);
+	error /= numNeurons;
 
 	return error;
 }
