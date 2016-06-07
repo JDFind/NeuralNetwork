@@ -31,25 +31,6 @@ void Network::setNormalization(double expectedMin, double expectedMax) {
 }
 
 //public
-void Network::feedInput(vector<double> inputVals) {
-
-	//for (auto &input : inputVals) {
-
-	//	input = normalizeInput(input);
-	//}
-
-	mCurrentInput = inputVals;
-
-	mCurrentOutput = frontPropagation();
-}
-
-//public
-vector<double> Network::getOutput() {
-
-	return mCurrentOutput;
-}
-
-//private
 void Network::normalizeInput(vector<double> *inputVals) {
 
 	for (auto &value : *inputVals) {
@@ -62,7 +43,7 @@ void Network::normalizeInput(vector<double> *inputVals) {
 	}
 }
 
-//private
+//public
 //functia inversa a celei folosite in normalizeInput()
 void Network::denormalizeOutput(vector<double> *outputVals) {
 
@@ -76,7 +57,23 @@ void Network::denormalizeOutput(vector<double> *outputVals) {
 	}
 }
 
+//public
+void Network::feedInput(vector<double> inputVals) {
+
+	normalizeInput(&inputVals);
+
+	mCurrentInput = inputVals;
+	mCurrentOutput = frontPropagation();
+}
+
+//public
+vector<double> Network::getOutput() {
+
+	return mCurrentOutput;
+}
+
 //private
+//(!) returneaza vector de output normalizat
 vector<double> Network::frontPropagation() {
 
 	Layer *inputLayer = &mLayers.at(0);
@@ -102,6 +99,7 @@ vector<double> Network::frontPropagation() {
 }
 
 //public
+//(!) vectorii outputValues si expectedValues trebuie sa fie normalizati inainte de a se apela functia
 //functia NU este apelata pentru calculul gradientului
 double Network::calculateRMSError(vector<double> outputValues, vector<double> expectedValues) {
 
@@ -125,6 +123,7 @@ double Network::calculateRMSError(vector<double> outputValues, vector<double> ex
 }
 
 //public
+//(!) vectorii outputValues si expectedValues trebuie sa fie normalizati inainte de a se apela functia
 void Network::backPropagation(vector<double> outputValues, vector<double> expectedValues) {
 
 	Layer *currentLayer = nullptr;

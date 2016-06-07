@@ -133,7 +133,10 @@ void useNetwork(Network *network) {
 		input.push_back(b);
 
 		network->feedInput(input);
-		cout << "Result: " << network->getOutput().front() << endl;
+
+		vector<double> output = network->getOutput();
+		network->denormalizeOutput(&output);
+		cout << "Result: " << output.front() << endl;
 
 		cout << endl;
 		cout << "Press 0 to go back to menu" << endl;

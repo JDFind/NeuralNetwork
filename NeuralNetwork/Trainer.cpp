@@ -72,22 +72,35 @@ double runXOR(Network *network, unsigned long int maxRuns, bool trainNetwork) {
 		vector<double> output = network->getOutput();
 
 		//FIXME: am un bias neuron in output (!)
-
 		//if (output.size() != 1) {
 		//	throw runtime_error("Invalid output received");
 		//}
 
 		expectedOutput.clear();
 		expectedOutput.push_back(xor (input.front(), input.back()));
+		network->normalizeInput(&expectedOutput);
 
 		double error = 0.0;
+
+		if (!trainNetwork || ((double)run / (double)maxRuns >= 0.9)) {
+
+			error = network->calculateRMSError(output, expectedOutput);
+			meanError += error;
+		}
 
 		if (trainNetwork) {
 
 			if (run >= maxRuns - pow(10, 2) || run <= pow(10, 2)) {
 
 				error = network->calculateRMSError(output, expectedOutput);
-				logTrainingToFile(run, input, output.front(), expectedOutput.front(), error, &outputFile);
+
+				vector<double> denormOutput = output;
+				network->denormalizeOutput(&denormOutput);
+
+				vector<double> denormExpectedOutput = expectedOutput;
+				network->denormalizeOutput(&denormExpectedOutput);
+
+				logTrainingToFile(run, input, denormOutput.front(), denormExpectedOutput.front(), error, &outputFile);
 			}
 
 			if (run % (maxRuns / 10) == 0) {
@@ -96,12 +109,6 @@ double runXOR(Network *network, unsigned long int maxRuns, bool trainNetwork) {
 			}
 
 			network->backPropagation(output, expectedOutput);
-		}
-
-		if (!trainNetwork || ((double)run / (double)maxRuns >= 0.9)) {
-
-			error = network->calculateRMSError(output, expectedOutput);
-			meanError += error;
 		}
 	}
 

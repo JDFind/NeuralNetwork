@@ -35,12 +35,12 @@ class Network {
 
 		normParams normalization;
 
-		void normalizeInput(vector<double> *inputVals);
-		void denormalizeOutput(vector<double> *outputVals);
-
 		vector<double> frontPropagation();
 
 	public:
+
+		void normalizeInput(vector<double> *inputVals);
+		void denormalizeOutput(vector<double> *outputVals);
 
 		Network(Layer inputNeurons, vector<Layer> hiddenLayer, Layer outputNeurons);
 		~Network();
