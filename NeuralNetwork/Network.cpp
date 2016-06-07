@@ -52,18 +52,24 @@ vector<double> Network::getOutput() {
 //private
 double Network::normalizeInput(double value) {
 
-	double result = (normalization.MIN_RANGE - normalization.MAX_RANGE) / (normalization.expectedMin - normalization.expectedMax) * value
-		+ normalization.MAX_RANGE * (normalization.expectedMin + normalization.expectedMax) / (normalization.expectedMin - normalization.expectedMax);
+	double result =
+		(normalization.MIN_RANGE - normalization.MAX_RANGE) / (normalization.expectedMin - normalization.expectedMax)
+		* value
+		+ normalization.MAX_RANGE
+		* (normalization.expectedMin + normalization.expectedMax) / (normalization.expectedMin - normalization.expectedMax);
 
 	return result;
 }
 
 //private
+//functia inversa a celei folosite in normalizeInput()
 double Network::deNormalizeOutput(double value) {
 
-	//functia inversa a celei folosite in normalizeInput()
-	double result = (value - normalization.MAX_RANGE * (normalization.expectedMin + normalization.expectedMax))
-		- (normalization.MIN_RANGE - normalization.MAX_RANGE);
+	double result =
+		value
+		* (normalization.expectedMin - normalization.expectedMax) / (normalization.MIN_RANGE - normalization.MAX_RANGE)
+		- normalization.MAX_RANGE
+		* (normalization.expectedMin + normalization.expectedMax) / (normalization.MIN_RANGE - normalization.MAX_RANGE);
 
 	return result;
 }
