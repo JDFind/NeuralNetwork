@@ -53,7 +53,7 @@ void trainNetwork(Network *network, bool lightTraining) {
 		numIterations = pow(10, 4) * 1;
 	}
 	else {
-		numIterations = pow(10, 5) * 1;
+		numIterations = pow(10, 5) * 5;
 	}
 
 	cout << endl;

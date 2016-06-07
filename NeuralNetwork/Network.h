@@ -14,8 +14,8 @@ typedef struct normalizationParameters {
 
 	//TODO: cat sa le pun?
 	//FIXME: strica convergenta
-	const double MIN_RANGE = -0.0;
-	const double MAX_RANGE = 0.5;
+	const double MIN_RANGE = -1;
+	const double MAX_RANGE = 1;
 
 	double expectedMin = 0.0;
 	double expectedMax = 0.0;
