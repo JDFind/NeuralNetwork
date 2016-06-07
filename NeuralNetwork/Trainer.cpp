@@ -16,6 +16,42 @@ void logTrainingToFile(int run, vector<double> input, double output, double expe
 	*outputFile << endl;
 }
 
+void setInput(vector<double> *input, unsigned long int currentRun) {
+
+	//BEGIN construct input
+	input->clear();
+
+	int a;
+	int b;
+
+	switch (currentRun % 4) {
+
+	case 1:
+		a = 0;
+		b = 0;
+		break;
+
+	case 2:
+		a = 0;
+		b = 1;
+		break;
+
+	case 3:
+		a = 1;
+		b = 0;
+		break;
+
+	case 0:
+		a = 1;
+		b = 1;
+		break;
+	}
+
+	input->push_back(a);
+	input->push_back(b);
+	//END
+}
+
 double runXOR(Network *network, unsigned long int maxRuns, bool trainNetwork) {
 
 	ofstream outputFile;
@@ -30,41 +66,9 @@ double runXOR(Network *network, unsigned long int maxRuns, bool trainNetwork) {
 
 	for (unsigned long int run = 1; run <= maxRuns; run++) {
 
-		input.clear();
-		expectedOutput.clear();
-
-		int a;
-		int b;
-
-		switch (run % 4) {
-
-		case 1:
-			a = 0;
-			b = 0;
-			break;
-
-		case 2:
-			a = 0;
-			b = 1;
-			break;
-
-		case 3:
-			a = 1;
-			b = 0;
-			break;
-
-		case 0:
-			a = 1;
-			b = 1;
-			break;
-		}
-
-		input.push_back(a);
-		input.push_back(b);
-		expectedOutput.push_back(xor (a, b));
+		setInput(&input, run);
 
 		network->feedInput(input);
-
 		vector<double> output = network->getOutput();
 
 		//FIXME: am un bias neuron in output (!)
@@ -72,6 +76,9 @@ double runXOR(Network *network, unsigned long int maxRuns, bool trainNetwork) {
 		//if (output.size() != 1) {
 		//	throw runtime_error("Invalid output received");
 		//}
+
+		expectedOutput.clear();
+		expectedOutput.push_back(xor (input.front(), input.back()));
 
 		double error = 0.0;
 
