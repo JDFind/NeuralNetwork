@@ -16,7 +16,7 @@ void logTrainingToFile(int run, vector<double> input, double output, double expe
 	*outputFile << endl;
 }
 
-double trainForXOR(Network *network, unsigned long int maxRuns) {
+double runXOR(Network *network, unsigned long int maxRuns, bool trainNetwork) {
 
 	ofstream outputFile;
 	/*string fileName = "output" + to_string(threadIndex) + ".txt";*/
@@ -75,27 +75,37 @@ double trainForXOR(Network *network, unsigned long int maxRuns) {
 
 		double error = 0.0;
 
-		if (run >= maxRuns - pow(10, 2) || run <= pow(10, 2)) {
+		if (trainNetwork) {
 
-			error = network->calculateError(output, expectedOutput);
-			logTrainingToFile(run, input, output.front(), expectedOutput.front(), error, &outputFile);
+			if (run >= maxRuns - pow(10, 2) || run <= pow(10, 2)) {
+
+				error = network->calculateRMSError(output, expectedOutput);
+				logTrainingToFile(run, input, output.front(), expectedOutput.front(), error, &outputFile);
+			}
+
+			if (run % (maxRuns / 10) == 0) {
+
+				cout << (double)run / (double)maxRuns * 100 << "%" << "\t";
+			}
+
+			network->backPropagation(output, expectedOutput);
 		}
 
-		if (run % (maxRuns / 10) == 0) {
-
-			cout << (double)run / (double)maxRuns * 100 << "%" << "\t";
-		}
-
-		if ((double)run / (double)maxRuns >= 0.9) {
+		if (!trainNetwork || ((double)run / (double)maxRuns >= 0.9)) {
 
 			error = network->calculateRMSError(output, expectedOutput);
 			meanError += error;
 		}
-
-		network->backPropagation(output, expectedOutput);
 	}
 
 	outputFile.close();
 
-	return meanError / (0.1 * maxRuns);
+	if (trainNetwork) {
+		meanError /= 0.1 * maxRuns;
+	}
+	else {
+		meanError /= maxRuns;
+	}
+
+	return meanError;
 }

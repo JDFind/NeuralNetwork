@@ -62,19 +62,50 @@ void trainNetwork(Network *network, bool lightTraining) {
 	float startTime = float(clock());
 
 	double meanError;
-	meanError = trainForXOR(network, numIterations);
+	meanError = runXOR(network, numIterations, true);
 
 	float timeDiff = float(clock() - startTime) / CLOCKS_PER_SEC;
 
 	cout << endl;
 	cout << "Training complete (" << timeDiff << " s)" << endl;
-	cout << "Mean error for last 10%: " << meanError << endl;
 
-	if ((lightTraining && meanError > 0.15) || (!lightTraining && meanError > 0.10)) {
+	//intamplator, avand valori de la 0 la 1, RMS este egal cu eroarea relativa medie
+	cout << "Mean percentage error for last 10%: " << meanError * 100 << "%"<< endl;
+
+	if ((lightTraining && meanError > 0.2) || (!lightTraining && meanError > 0.10)) {
 
 		cout << endl;
 		cout << "This neural network is a failure!" << endl;
 	}
+}
+
+void testNetwork(Network *network) {
+
+	if (network == nullptr) {
+
+		cout << "Network not initialised." << endl;
+		return;
+	}
+
+	unsigned long int numIterations;
+
+	numIterations = 100;
+
+	cout << endl;
+	cout << "Testing neural network with " << numIterations << " iterations" << endl;
+
+	float startTime = float(clock());
+
+	double meanError;
+	meanError = runXOR(network, numIterations, false);
+
+	float timeDiff = float(clock() - startTime) / CLOCKS_PER_SEC;
+
+	cout << endl;
+	cout << "Testing complete (" << timeDiff << " s)" << endl;
+
+	//intamplator, avand valori de la 0 la 1, RMS este egal cu eroarea relativa medie
+	cout << "Mean percentage error: " << meanError * 100 << "%" << endl;
 }
 
 void useNetwork(Network *network) {
@@ -149,6 +180,10 @@ int main() {
 
 			case MENU_OPTION_HEAVY_TRAIN_XOR:
 				trainNetwork(network, false);
+				break;
+
+			case MENU_OPTION_TEST_XOR:
+				testNetwork(network);
 				break;
 
 			case MENU_OPTION_USE_XOR:
